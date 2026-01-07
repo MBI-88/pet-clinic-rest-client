@@ -8,28 +8,33 @@ namespace pet_clinic_rest_client.src;
 
 internal class Client : IClient
 {
-    static readonly HttpClient client = new HttpClient();
-    private const string Url = "http://localhost:9966/petclinic/api/";
+    private readonly HttpClient client;
+
+    public  Client()
+    {
+      client = new HttpClient();
+      client.BaseAddress = new Uri("http://localhost:9966/petclinic/api/");
+    }
 
     /* Models */
     internal class VetSpeciality
     {
         public int id { get; set; }
-        public string name { get; set; }
+        public string? name { get; set; }
     }
 
     internal class Vet
     {
         public int id { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public List<VetSpeciality> specialities { get; set; }
+        public string? firstName { get; set; }
+        public string? lastName { get; set; }
+        public List<VetSpeciality>? specialities { get; set; }
     }
 
     internal class Visit
     {
         public int id { get; set; }
-        public string description { get; set; }
+        public string? description { get; set; }
         public int petId { get; set; }
         public DateTime date { get; set; }
         public override string ToString()
@@ -38,10 +43,10 @@ internal class Client : IClient
         }
     }
 
-    public class Speciality
+    internal class Speciality
     {
         public int id { get; set; }
-        public string name { get; set; }
+        public string? name { get; set; }
         public override string ToString()
         {
             return "id: " + id + " name " + name;
@@ -56,7 +61,7 @@ internal class Client : IClient
     {
         try
         {
-            using HttpResponseMessage response = await client.GetAsync(Url + "vets");
+            using HttpResponseMessage response = await client.GetAsync("vets");
             if (response.IsSuccessStatusCode)
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -74,11 +79,11 @@ internal class Client : IClient
     {
         try
         {
-            using HttpResponseMessage response = await client.GetAsync(Url + "vets");
+            using HttpResponseMessage response = await client.GetAsync("vets");
             if (response.IsSuccessStatusCode)
             {
                 string jsonString = await response.Content.ReadAsStringAsync();
-                List<Vet> vets = JsonSerializer.Deserialize<List<Vet>>(jsonString);
+                List<Vet> vets = JsonSerializer.Deserialize<List<Vet>>(jsonString)!;
                 Console.WriteLine(vets.Count);
 
             }
@@ -95,11 +100,11 @@ internal class Client : IClient
     {
         try
         {
-            using HttpResponseMessage response = await client.GetAsync(Url + "visits");
+            using HttpResponseMessage response = await client.GetAsync("visits");
             if (response.IsSuccessStatusCode)
             {
                 string jsonString = await response.Content.ReadAsStringAsync();
-                List<Visit> visits = JsonSerializer.Deserialize<List<Visit>>(jsonString);
+                List<Visit> visits = JsonSerializer.Deserialize<List<Visit>>(jsonString)!;
                 int count = 0;
                 foreach (Visit v in visits)
                 {
@@ -120,14 +125,13 @@ internal class Client : IClient
     {
         HttpResponseMessage response = await client.PostAsJsonAsync("specialties", speciality);
         response.EnsureSuccessStatusCode();
-        return response.Headers.Location;
+        return response.Headers.Location!;
     }
 
     public async Task Request4()
     {
         try
         {
-            client.BaseAddress = new Uri(Url);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             Speciality speciality = new Speciality()
@@ -152,7 +156,7 @@ internal class Client : IClient
                 "specialties", speciality);
         response.EnsureSuccessStatusCode();
         string jsonContent = response.Content.ReadAsStringAsync().Result;
-        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonContent);
+        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonContent)!;
         return dev;
     }
 
@@ -162,7 +166,7 @@ internal class Client : IClient
                 "specialties");
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
-        List<Speciality> specialities = JsonSerializer.Deserialize<List<Speciality>>(jsonString);
+        List<Speciality> specialities = JsonSerializer.Deserialize<List<Speciality>>(jsonString)!;
         return specialities;
 
     }
@@ -172,7 +176,7 @@ internal class Client : IClient
                 "specialties" + "/" + id);
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
-        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString);
+        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString)!;
         return dev;
     }
 
@@ -180,10 +184,10 @@ internal class Client : IClient
     {
         foreach (Speciality s in specialityList)
         {
-            if (s.name.Equals(name))
+            if (s.name!.Equals(name))
                 return s;
         }
-        return null;
+        return new Speciality();
     }
 
     // Pregunta 7
@@ -191,7 +195,6 @@ internal class Client : IClient
     {
         try
         {
-            client.BaseAddress = new Uri(Url);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             Speciality specialityToBeCreated = new Speciality()
@@ -227,7 +230,7 @@ internal class Client : IClient
                 $"specialties/{speciality.id}", speciality);
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
-        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString);
+        Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString)!;
         return dev;
     }
 
@@ -235,7 +238,6 @@ internal class Client : IClient
     {
         try
         {
-            client.BaseAddress = new Uri(Url);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -286,7 +288,6 @@ internal class Client : IClient
     {
         try
         {
-            client.BaseAddress = new Uri(Url);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
