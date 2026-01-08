@@ -54,10 +54,16 @@ class Program
                         await client.Request7();
                         break;
                     }
+                
+                case "req8":
+                    {
+                        await client.Request8();
+                        break;
+                    }
 
                 default:
                     {
-                        Console.WriteLine("Use req1,req2 for selecting resquest type");
+                        Console.WriteLine("Use req1,req2,reqX for selecting resquest type");
                         break;
                     }
 

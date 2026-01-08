@@ -11,4 +11,5 @@ public interface IClient
     Task Request5();
     Task Request6();
     Task Request7();
+    Task Request8();
 }

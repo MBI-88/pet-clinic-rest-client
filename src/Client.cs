@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
 
 namespace pet_clinic_rest_client.src;
 
@@ -10,10 +12,13 @@ internal class Client : IClient
 {
     private readonly HttpClient client;
 
-    public  Client()
+    public Client()
     {
-      client = new HttpClient();
-      client.BaseAddress = new Uri("http://localhost:9966/petclinic/api/");
+        client = new HttpClient();
+        client.BaseAddress = new Uri("http://localhost:9966/petclinic/api/");
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
     }
 
     /* Models */
@@ -132,12 +137,11 @@ internal class Client : IClient
     {
         try
         {
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
             Speciality speciality = new Speciality()
             {
-                id = 100,
-                name = "MySpec100"
+                //id = 100,
+                name = "MySpec101"
             };
             var url = await CreateSpecialityAsync(speciality);
             Console.WriteLine($"Created at {url}");
@@ -173,7 +177,7 @@ internal class Client : IClient
     private async Task<Speciality> GetSpecialityAsync(int id)
     {
         HttpResponseMessage response = await client.GetAsync(
-                "specialties" + "/" + id);
+                "specialties/" + id);
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
         Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString)!;
@@ -195,8 +199,7 @@ internal class Client : IClient
     {
         try
         {
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
             Speciality specialityToBeCreated = new Speciality()
             {
                 id = 123,
@@ -233,13 +236,12 @@ internal class Client : IClient
         Speciality dev = JsonSerializer.Deserialize<Speciality>(jsonString)!;
         return dev;
     }
-
+   
+   // Pregunta 8
     public async Task Request6()
     {
         try
         {
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
             Speciality specialityToBeCreated = new Speciality()
             {
@@ -284,13 +286,12 @@ internal class Client : IClient
         return response.StatusCode;
     }
 
+    // Pregunta 9
     public async Task Request7()
     {
         try
         {
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
+    
             Speciality specialityToBeCreated = new Speciality()
             {
                 name = "MySpecialityDemo-Pregunta9"
@@ -333,5 +334,35 @@ internal class Client : IClient
         }
     }
 
+    // Pregunta 10
+    public async Task Request8()
+    {
+        try
+        {
+            var clientId = "admin";
+            var clientSecret = "admin";
+
+            var auth = $"{clientId}:{clientSecret}";
+            var base64Enc = Convert.ToBase64String(Encoding.UTF8.GetBytes(auth));
+            client.DefaultRequestHeaders.Add("Authorization", "Basic " + base64Enc);
+
+            // Buscar todos
+            List<Speciality> specialityList = await GetSpecialitiesAsync();
+
+            if (specialityList != null)
+            {
+                Console.WriteLine("specialityList size -> " + specialityList.Count);
+                foreach (Speciality s in specialityList)
+                {
+                    Console.WriteLine("Specialty -> " + s);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.ToString());
+        }
+    }
 }
 
