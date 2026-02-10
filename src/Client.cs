@@ -128,7 +128,7 @@ internal class Client : IClient
     // Pregunta 6
     private async Task<Uri> CreateSpecialityAsync(Speciality speciality)
     {
-        HttpResponseMessage response = await client.PostAsJsonAsync("specialties", speciality);
+        using HttpResponseMessage response = await client.PostAsJsonAsync("specialties", speciality);
         response.EnsureSuccessStatusCode();
         return response.Headers.Location!;
     }
@@ -156,7 +156,7 @@ internal class Client : IClient
 
     private async Task<Speciality> CreateSpecialityAsyncBody(Speciality speciality)
     {
-        HttpResponseMessage response = await client.PostAsJsonAsync(
+        using HttpResponseMessage response = await client.PostAsJsonAsync(
                 "specialties", speciality);
         response.EnsureSuccessStatusCode();
         string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -166,7 +166,7 @@ internal class Client : IClient
 
     private async Task<List<Speciality>> GetSpecialitiesAsync()
     {
-        HttpResponseMessage response = await client.GetAsync(
+        using HttpResponseMessage response = await client.GetAsync(
                 "specialties");
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
@@ -176,7 +176,7 @@ internal class Client : IClient
     }
     private async Task<Speciality> GetSpecialityAsync(int id)
     {
-        HttpResponseMessage response = await client.GetAsync(
+        using HttpResponseMessage response = await client.GetAsync(
                 "specialties/" + id);
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
@@ -229,7 +229,7 @@ internal class Client : IClient
 
     private async Task<Speciality> UpdateSpecialityAsync(Speciality speciality)
     {
-        HttpResponseMessage response = await client.PutAsJsonAsync(
+        using HttpResponseMessage response = await client.PutAsJsonAsync(
                 $"specialties/{speciality.id}", speciality);
         response.EnsureSuccessStatusCode();
         string jsonString = await response.Content.ReadAsStringAsync();
@@ -281,7 +281,7 @@ internal class Client : IClient
 
     private async Task<HttpStatusCode> DeleteSpecialityAsync(int id)
     {
-        HttpResponseMessage response = await client.DeleteAsync(
+        using HttpResponseMessage response = await client.DeleteAsync(
                 "specialties/" + id);
         return response.StatusCode;
     }
